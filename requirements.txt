@@ -1,2 +1,3 @@
 environs==7.3.0
 flask==1.1.1
+ujson==1.35
