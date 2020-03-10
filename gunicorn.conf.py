@@ -3,7 +3,7 @@ from datetime import datetime
 
 from gunicorn.glogging import Logger
 
-env = Env
+env = Env()
 
 # The number of pending connections. This refers to the number of clients
 # that can be waiting to be served. Exceeding this number results
