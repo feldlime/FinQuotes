@@ -32,7 +32,7 @@ def create_response(
 
     mimetype = 'application/json'
 
-    response = Response(content_json, code, mimetype)
+    response = Response(content_json, code, mimetype=mimetype)
     return response
 
 

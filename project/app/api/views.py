@@ -10,7 +10,7 @@ def ping() -> Response:
     return ok(message='pong')
 
 
-@bp.route('/quote/<str:code>', methods=('GET',))
+@bp.route('/quote/<string:code>', methods=('GET',))
 def quote(code: str) -> Response:
     if code == '':
         return server_error(message="we don't know how to process empty code")
