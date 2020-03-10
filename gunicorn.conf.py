@@ -28,7 +28,7 @@ workers = env.int('GUNICORN_WORKERS', 2)
 # If a worker does not notify the master process in this
 # number of seconds it is killed and a new worker
 # is spawned to replace it.
-timeout = env.float('GUNICORN_TIMEOUT', 10)
+timeout = env.int('GUNICORN_TIMEOUT', 10)
 
 # Timeout for graceful workers restart.
 # After receiving a restart signal, workers have this much time to finish
@@ -38,7 +38,7 @@ graceful_timeout = env.int('GUNICORN_GRACEFUL_TIMEOUT', 5)
 
 # The number of seconds to wait for the next
 # request on a Keep-Alive HTTP connection.
-keepalive = env.float('GUNICORN_KEEPALIVE', 5)    # five seconds
+keepalive = env.int('GUNICORN_KEEPALIVE', 5)    # five seconds
 
 # The path to a log file to write to.
 # A path string. "-" means log to stdout.
