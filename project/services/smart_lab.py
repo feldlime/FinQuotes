@@ -7,6 +7,12 @@ BASE_URL = 'https://smart-lab.ru'
 SEARCH_URL = f'{BASE_URL}/q/ajax-stocks-search'
 
 
+__all__ = (
+    'SmartLabError',
+    'quote',
+)
+
+
 class SmartLabError(Exception):
     pass
 

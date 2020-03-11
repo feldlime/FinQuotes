@@ -1,6 +1,7 @@
 from flask import Response, Blueprint
 
 from project.http import ok, server_error, bad_request
+from project.services import smart_lab_quote
 
 bp = Blueprint('api', __name__)
 
@@ -12,9 +13,5 @@ def ping() -> Response:
 
 @bp.route('/quote/<string:code>', methods=('GET',))
 def quote(code: str) -> Response:
-    if code == 'EMPTY':
-        return server_error(message="we don't know how to process empty code")
-    if code == 'FOO':
-        return bad_request(message='incorrect code')
-    else:
-        return ok(data={'price': len(code)})
+    price = smart_lab_quote(code)
+    return ok(data={'price': price})
