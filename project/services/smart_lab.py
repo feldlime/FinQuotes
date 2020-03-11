@@ -9,11 +9,16 @@ SEARCH_URL = f'{BASE_URL}/q/ajax-stocks-search'
 
 __all__ = (
     'SmartLabError',
+    'TickerNotFoundError',
     'quote',
 )
 
 
 class SmartLabError(Exception):
+    pass
+
+
+class TickerNotFoundError(SmartLabError):
     pass
 
 
@@ -34,6 +39,9 @@ def request_variants(ticker: str) -> list:
 
 def get_url(ticker: str) -> str:
     variants = request_variants(ticker)
+
+    if len(variants) == 0:
+        raise TickerNotFoundError()
 
     # TODO: think about it
     res = variants[0]
