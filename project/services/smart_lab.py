@@ -34,6 +34,7 @@ def request_variants(ticker: str) -> list:
 
 
 def get_url(ticker: str) -> str:
+    ticker = ticker.lower()
     variants = request_variants(ticker)
 
     if len(variants) == 0:
@@ -41,7 +42,12 @@ def get_url(ticker: str) -> str:
     elif len(variants) == 1:
         res = variants[0]
     else:
-        filtered = list(filter(lambda d: d['value'].count(f'[{ticker}]') == 1, variants))
+        filtered = list(
+            filter(
+                lambda d: d['value'].lower().count(f'[{ticker}]') == 1,
+                variants,
+            )
+        )
         if len(filtered) == 0:
             raise TickerNotFoundError('No variants after filtering')
         elif len(filtered) == 1:
