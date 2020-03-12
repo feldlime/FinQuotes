@@ -1,3 +1,5 @@
+import re
+
 import requests
 from lxml import etree
 
@@ -37,7 +39,8 @@ def extract_price(html: str) -> float:
 
     price_elem = price_elems[0]
     price = price_elem.text
-    return float(price.replace(',', '.'))
+    clear_price = re.sub(r'[^0-9,]', '', price)
+    return float(clear_price.replace(',', '.'))
 
 
 def quote(ticker: str) -> float:
