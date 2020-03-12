@@ -2,6 +2,7 @@ import bs4 as bs
 from lxml import etree
 import requests
 
+from .exceptions import TickerNotFoundError
 
 BASE_URL = 'https://smart-lab.ru'
 SEARCH_URL = f'{BASE_URL}/q/ajax-stocks-search'
@@ -9,16 +10,11 @@ SEARCH_URL = f'{BASE_URL}/q/ajax-stocks-search'
 
 __all__ = (
     'SmartLabError',
-    'TickerNotFoundError',
     'quote',
 )
 
 
 class SmartLabError(Exception):
-    pass
-
-
-class TickerNotFoundError(SmartLabError):
     pass
 
 
