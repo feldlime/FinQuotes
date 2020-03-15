@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Response, Blueprint
 
 from project.http import ok, server_error, bad_request
@@ -28,3 +30,10 @@ def quote(ticker: str) -> Response:
         return server_error(message=f'Price cannot be found: {e!r}')
     except Exception as e:
         return server_error(message=f'Some problems while getting price: {e!r}')
+
+
+@bp.route('/time', methods=('GET',))
+def time() -> Response:
+    now = datetime.now()
+    now_str = now.strftime('%Y-%m-%d %H:%M:%S')
+    return ok(data={'time': now_str})
