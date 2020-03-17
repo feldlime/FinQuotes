@@ -23,5 +23,4 @@ def get_quote(code: str) -> Quote:
         return Quote(price, 'moex_share')
 
     price = bcs_quote(code)
-    if price is not None:
-        return Quote(price, 'bcs')
+    return Quote(price, 'bcs')
