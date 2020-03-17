@@ -10,24 +10,30 @@ def fetch(engine: str, market: str, code: str) -> requests.Response:
     return resp
 
 
-def quote(engine: str, market: str, code: str) -> Optional[float]:
+def get_price_data(engine: str, market: str, code: str) -> dict:
     resp = fetch(engine, market, code)
     json = resp.json()
     data = json['marketdata']['data']
-    price_data = list(filter(lambda l: l[1] in ('TQBR', 'TQTF'), data))
+    return data
+
+
+def share_quote(code: str) -> Optional[float]:
+    price_data = get_price_data('stock', 'shares', code)
+    price_data = list(filter(lambda l: l[1] in ('TQBR', 'TQTF'), price_data))
 
     if not price_data:
         return None
 
-    price_str = price_data[0][12]
-    price = float(price_str)
-
-    return price
-
-
-def share_quote(code: str) -> Optional[float]:
-    return quote('stock', 'shares', code)
+    price = price_data[0][12]
+    return float(price)
 
 
 def bound_quote(code: str) -> Optional[float]:
-    return quote('stock', 'bound', code)
+    price_data = get_price_data('stock', 'bonds', code)
+
+    if not price_data:
+        return None
+
+    price = price_data[0][11]
+    return float(price)
+
