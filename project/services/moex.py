@@ -10,7 +10,7 @@ def fetch(engine: str, market: str, code: str) -> requests.Response:
     return resp
 
 
-def get_price(engine: str, market: str, code: str) -> Optional[float]:
+def quote(engine: str, market: str, code: str) -> Optional[float]:
     resp = fetch(engine, market, code)
     json = resp.json()
     data = json['marketdata']['data']
@@ -25,9 +25,9 @@ def get_price(engine: str, market: str, code: str) -> Optional[float]:
     return price
 
 
-def get_share_price(code: str) -> Optional[float]:
-    return get_price('stock', 'shares', code)
+def share_quote(code: str) -> Optional[float]:
+    return quote('stock', 'shares', code)
 
 
-def get_bound_price(code: str) -> Optional[float]:
-    return get_price('stock', 'bound', code)
+def bound_quote(code: str) -> Optional[float]:
+    return quote('stock', 'bound', code)
