@@ -3,7 +3,7 @@ import re
 import requests
 from lxml import etree
 
-from .exceptions import TickerNotFoundError, PriceNotFoundError
+from project.exceptions import TickerNotFoundError, PriceNotFoundError
 
 BASE_URL = 'https://bcs-express.ru/kotirovki-i-grafiki'
 

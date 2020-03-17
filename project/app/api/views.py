@@ -1,14 +1,15 @@
 from datetime import datetime
 
 from flask import Response, Blueprint
+import attr
 
-from project.http import ok, server_error, bad_request
-from project.services import (
-    smart_lab_quote,
-    bcs_quote,
+from project.exceptions import (
     TickerNotFoundError,
     PriceNotFoundError,
 )
+from project.http import ok, server_error, bad_request
+from project.quotes import get_quote
+
 
 bp = Blueprint('api', __name__)
 
@@ -21,9 +22,8 @@ def ping() -> Response:
 @bp.route('/quote/<string:ticker>', methods=('GET',))
 def quote(ticker: str) -> Response:
     try:
-        # price = smart_lab_quote(code)
-        price = bcs_quote(ticker)
-        return ok(data={'price': price})
+        quote_ = get_quote(ticker)
+        return ok(data=attr.asdict(quote_))
     except TickerNotFoundError as e:
         return bad_request(message=f'Ticker not found: {e!r}')
     except PriceNotFoundError as e:

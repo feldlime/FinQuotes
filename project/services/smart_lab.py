@@ -2,7 +2,7 @@ import bs4 as bs
 from lxml import etree
 import requests
 
-from .exceptions import TickerNotFoundError
+from project.exceptions import TickerNotFoundError
 
 BASE_URL = 'https://smart-lab.ru'
 SEARCH_URL = f'{BASE_URL}/q/ajax-stocks-search'
