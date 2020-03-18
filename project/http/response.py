@@ -2,7 +2,9 @@ from http import HTTPStatus
 from typing import Any
 
 import ujson
-from flask import Response
+from aiohttp import hdrs, web
+
+from project.types import Headers
 
 
 __all__ = (
@@ -12,12 +14,20 @@ __all__ = (
     "server_error",
 )
 
+HEADERS: Headers = {
+    hdrs.EXPIRES: '0',
+    hdrs.PRAGMA: 'no-cache',
+    hdrs.CACHE_CONTROL: 'no-cache, no-store, must-revalidate',
+}
+
 
 def create_response(
         code: int,
         data: Any = None,
         message: str = None,
-) -> Response:
+) -> web.Response:
+
+    # noinspection PyArgumentList
     http_status = HTTPStatus(code)
 
     data = data or {}
@@ -28,27 +38,24 @@ def create_response(
         'data': data,
         'message': message,
     }
-    content_json = ujson.dumps(content)
 
-    mimetype = 'application/json'
-
-    response = Response(content_json, code, mimetype=mimetype)
+    response = web.json_response(content, headers=HEADERS, dumps=ujson.dumps)
     return response
 
 
-def ok(data: Any = None, message: str = None) -> Response:
+def ok(data: Any = None, message: str = None) -> web.Response:
     status = HTTPStatus.OK
     response = create_response(status, data, message)
     return response
 
 
-def bad_request(data: Any = None, message: str = None) -> Response:
+def bad_request(data: Any = None, message: str = None) -> web.Response:
     status = HTTPStatus.BAD_REQUEST
     response = create_response(status, data, message)
     return response
 
 
-def server_error(data: Any = None, message: str = None) -> Response:
+def server_error(data: Any = None, message: str = None) -> web.Response:
     status = HTTPStatus.INTERNAL_SERVER_ERROR
     response = create_response(status, data, message)
     return response
