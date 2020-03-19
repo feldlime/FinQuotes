@@ -1,9 +1,10 @@
-from project import create_app, Config
+from aiohttp import web
 
-config = Config()
-app = create_app(config)
+from project import create_app
+
 
 if __name__ == '__main__':
-    app.run(debug=app.debug)
+    app = create_app()
+    web.run_app(app)
 
 
