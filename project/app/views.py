@@ -10,6 +10,8 @@ from project.exceptions import (
 from project.http import ok, server_error, bad_request
 from project.quotes import get_quote
 
+from .schemas import TickerSchema
+
 __all__ = (
     'ROUTES',
 )
@@ -26,7 +28,7 @@ async def time(_: web.Request) -> web.Response:
 
 
 async def quote(request: web.Request) -> web.Response:
-    ticker = request.match_info['ticker']
+    ticker = TickerSchema().load(request.match_info).pop('ticker')
     try:
         quote_ = get_quote(ticker)
         return ok(data=attr.asdict(quote_))
