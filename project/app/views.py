@@ -39,7 +39,7 @@ async def quote(request: web.Request) -> web.Response:
 
 
 ROUTES = (
-    web.route(hdrs.METH_ANY, '/ping', ping, name='ping'),
-    web.route(hdrs.METH_ANY, '/time', time, name='time'),
-    web.route(hdrs.METH_GET, '/quote/{ticker}', quote, name='quote'),
+    web.route(hdrs.METH_ANY, 'api/ping', ping, name='ping'),
+    web.route(hdrs.METH_ANY, 'api/time', time, name='time'),
+    web.route(hdrs.METH_GET, 'api/quote/{ticker}', quote, name='quote'),
 )
