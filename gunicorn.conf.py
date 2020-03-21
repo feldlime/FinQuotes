@@ -1,95 +1,62 @@
-from environs import Env
-from datetime import datetime
+from multiprocessing import cpu_count
 
-from gunicorn.glogging import Logger
+from project import env, settings
 
-env = Env()
+with env.prefixed("GUNICORN_"):
 
-# The number of pending connections. This refers to the number of clients
-# that can be waiting to be served. Exceeding this number results
-# in the client getting an error when attempting to connect.
-backlog = env.int('GUNICORN_BACKLOG', 2048)
+    # The number of pending connections.
+    backlog = env.int("BACKLOG", 2048)
 
+    # The socket to bind.
+    bind = env.str("BIND", settings.BIND)
 
-def default_bind() -> str:
-    port = env.str('PORT', '5000')
-    return f'0.0.0.0:{port}'
+    # Check the configuration.
+    check_config = env.bool("CHECK_CONFIG", False)
 
-# The socket to bind.
-bind = env.str('GUNICORN_BIND', default_bind())
+    # The number of worker processes that server
+    # should keep alive for handling requests.
+    workers = env.int("WORKERS", cpu_count() * 2 + 1)
 
-# Check the configuration.
-check_config = env.bool('GUNICORN_CHECK_CONFIG', False)
+    # The type of workers to use.
+    worker_class = env.str("WORKER_CLASS", "aiohttp.GunicornWebWorker")
 
-# The number of worker processes that this server
-# should keep alive for handling requests.
-workers = env.int('GUNICORN_WORKERS', 2)
+    # The maximum number of requests a worker will process before restarting.
+    # Any value greater than zero will limit the number of requests
+    # a work will process before automatically restarting.
+    max_requests = env.int("MAX_REQUESTS", 100)
 
-# If a worker does not notify the master process in this
-# number of seconds it is killed and a new worker
-# is spawned to replace it.
-timeout = env.int('GUNICORN_TIMEOUT', 10)
+    # If a worker does not notify the master process in this number of
+    # seconds it is killed and a new worker is spawned to replace it.
+    timeout = env.int("TIMEOUT", 60)
 
-# Timeout for graceful workers restart.
-# After receiving a restart signal, workers have this much time to finish
-# serving requests. Workers still alive after the timeout (starting
-# from the receipt of the restart signal) are force killed.
-graceful_timeout = env.int('GUNICORN_GRACEFUL_TIMEOUT', 5)
+    # Timeout for graceful workers restart.
+    #
+    # After receiving a restart signal, workers have this much
+    # time to finish serving requests. Workers still
+    # alive after the timeout are force killed.
+    graceful_timeout = env.int("GRACEFUL_TIMEOUT", 5)
 
-# The number of seconds to wait for the next
-# request on a Keep-Alive HTTP connection.
-keepalive = env.int('GUNICORN_KEEPALIVE', 5)    # five seconds
+    # The number of seconds to wait for the next
+    # request on a Keep-Alive HTTP connection.
+    keepalive = env.int("KEEPALIVE", 5)
 
-# The path to a log file to write to.
-# A path string. "-" means log to stdout.
-logfile = env.str('GUNICORN_LOGFILE', '-')
+    # Install a trace function that spews every line of Python
+    # that is executed when running the server.
+    # This is the nuclear option.
+    spew = env.bool("SPEW", False)
 
-# The granularity of log output.
-loglevel = env.str('GUNICORN_LOGLEVEL', 'debug')
+    # Detach the main Gunicorn process from the controlling
+    # terminal with a standard fork sequence.
+    daemon = env.bool("DAEMON", False)
 
-# The Error log file to write to.
-errorlog = env.str('GUNICORN_ERRORLOG', '-')
+    # The path to a log file to write to, default is stdout.
+    logfile = env.str("LOGFILE", "-")
 
-# The Access log file to write to.
-accesslog = env.str('GUNICORN_ACCESSLOG', '-')
+    # The granularity of log output.
+    loglevel = env.str("LOGLEVEL", "info")
 
-# The access log format.
-access_log_format = 'time="%(t)s" ' \
-                    'level="DEBUG" ' \
-                    'logger="gunicorn.access" ' \
-                    'referer="%(f)s" ' \
-                    'user_agent="%(a)s" ' \
-                    'protocol="%(H)s" ' \
-                    'http_method="%(m)s" ' \
-                    'url_path="%(U)s" ' \
-                    'response_code="%(s)s" ' \
-                    'request_time="%(L)s"'
+    # The Error log file to write to.
+    errorlog = env.str("ERRORLOG", "-")
 
-
-class GunicornLogger(Logger):
-    error_fmt = r'time="%(asctime)s" ' \
-                r'level="%(levelname)s" ' \
-                r'logger="%(name)s" ' \
-                r'message="%(message)s" ' \
-                r'pid="%(process)d"'
-
-    datefmt = r'%Y-%m-%d %H:%M:%S'
-
-    access_fmt = '%(message)s pid="%(process)d"'
-
-    syslog_fmt = r'time="%(asctime)s" ' \
-                 r'level="%(levelname)s" ' \
-                 r'logger="%(name)s" ' \
-                 r'message="%(message)s" ' \
-                 r'pid="%(process)d"'
-
-    def now(self) -> str:
-        fmt = '%Y-%m-%d %H:%M:%S'
-        return datetime.now().strftime(fmt)
-
-
-# The logger you want to use to log events in Gunicorn.
-#
-# The default class (gunicorn.glogging.Logger) handle most of normal
-# usages in logging. It provides error and access logging.
-logger_class = GunicornLogger
+    # The Access log file to write to.
+    accesslog = env.str("ACCESSLOG", "-")
