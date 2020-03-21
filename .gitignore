@@ -15,7 +15,7 @@ instance/
 .ipynb_checkpoints
 
 # virtualenv
-venv/
+venv*/
 
 # User-specific stuff:
 .idea/
