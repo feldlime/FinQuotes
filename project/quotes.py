@@ -1,5 +1,8 @@
+from typing import Callable, Optional
+
 import attr
 
+from .exceptions import GettingQuoteError
 from .services import (
     moex_bound_quote,
     moex_share_quote,
@@ -13,14 +16,29 @@ class Quote:
     source: str = attr.ib()
 
 
-def get_quote(code: str) -> Quote:
-    price = moex_bound_quote(code)
-    if price is not None:
-        return Quote(price, 'moex_bound')
+def get_quote_with_method(
+        method: Callable[[str], float],
+        source_name: str,
+        ticker: str,
+) -> Optional[Quote]:
+    try:
+        price = method(ticker)
+    except GettingQuoteError:
+        return None
 
-    price = moex_share_quote(code)
-    if price is not None:
-        return Quote(price, 'moex_share')
+    return Quote(price, source_name)
 
-    price = bcs_quote(code)
-    return Quote(price, 'bcs')
+
+def get_quote(ticker: str) -> Quote:
+    methods = [
+        (moex_share_quote, 'moex_share'),
+        (moex_bound_quote, 'moex_bound'),
+        (bcs_quote, 'bcs'),
+    ]
+
+    for method in methods:
+        quote = get_quote_with_method(method[0], method[1], ticker)
+        if quote is not None:
+            return quote
+
+    raise GettingQuoteError('No quote was found')
