@@ -1,6 +1,6 @@
-from typing import Optional
-
 import requests
+
+from project.exceptions import GettingQuoteError
 
 
 def fetch(engine: str, market: str, code: str) -> requests.Response:
@@ -17,22 +17,22 @@ def get_price_data(engine: str, market: str, code: str) -> dict:
     return data
 
 
-def share_quote(code: str) -> Optional[float]:
+def share_quote(code: str) -> float:
     price_data = get_price_data('stock', 'shares', code)
     price_data = list(filter(lambda l: l[1] in ('TQBR', 'TQTF'), price_data))
 
     if not price_data:
-        return None
+        raise GettingQuoteError()
 
     price = price_data[0][12]
     return float(price)
 
 
-def bound_quote(code: str) -> Optional[float]:
+def bound_quote(code: str) -> float:
     price_data = get_price_data('stock', 'bonds', code)
 
     if not price_data:
-        return None
+        raise GettingQuoteError()
 
     price = price_data[0][11]
     return float(price)
