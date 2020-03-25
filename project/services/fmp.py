@@ -3,7 +3,6 @@ import requests
 from project.exceptions import TickerNotFoundError
 
 BASE_URL = 'https://financialmodelingprep.com/api/v3/company/profile'
-PRICE_FIELD = 'price'
 
 
 def make_url(ticker: str) -> str:
@@ -20,7 +19,7 @@ def fetch(ticker: str) -> dict:
 def quote(ticker: str) -> float:
     json = fetch(ticker)
     try:
-        price = json[PRICE_FIELD]
+        price = json['profile']['price']
     except KeyError:
         raise TickerNotFoundError()
     return price
