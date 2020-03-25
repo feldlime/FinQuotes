@@ -6,6 +6,7 @@ import attr
 from project.exceptions import (
     TickerNotFoundError,
     PriceNotFoundError,
+    GettingQuoteError,
 )
 from project.http import ok, server_error, bad_request
 from project.quotes import get_quote
@@ -36,6 +37,8 @@ async def quote(request: web.Request) -> web.Response:
         return bad_request(message=f'Ticker not found: {e!r}')
     except PriceNotFoundError as e:
         return server_error(message=f'Price cannot be found: {e!r}')
+    except GettingQuoteError as e:
+        return server_error(message=f'Quote cannot be found: {e!r}')
     except Exception as e:
         return server_error(message=f'Some internal problems: {e!r}')
 

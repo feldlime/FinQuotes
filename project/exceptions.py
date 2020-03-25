@@ -1,6 +1,10 @@
-class TickerNotFoundError(Exception):
+class GettingQuoteError(Exception):
     pass
 
 
-class PriceNotFoundError(Exception):
+class TickerNotFoundError(GettingQuoteError):
+    pass
+
+
+class PriceNotFoundError(GettingQuoteError):
     pass

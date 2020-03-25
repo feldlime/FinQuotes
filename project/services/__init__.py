@@ -4,3 +4,4 @@ from .moex import (
     bound_quote as moex_bound_quote,
     share_quote as moex_share_quote,
 )
+from .fmp import quote as fmp_quote
