@@ -37,7 +37,8 @@ def get_quote(ticker: str) -> Quote:
     ]
 
     for method in methods:
-        quote = get_quote_with_method(method[0], method[1], ticker)
+        method_func, method_name = method
+        quote = get_quote_with_method(method_func, method_name, ticker)
         if quote is not None:
             return quote
 
