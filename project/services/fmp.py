@@ -1,4 +1,4 @@
-import requests
+import aiohttp
 
 from project.exceptions import TickerNotFoundError
 
@@ -9,15 +9,15 @@ def make_url(ticker: str) -> str:
     return f'{BASE_URL}/{ticker}'
 
 
-def fetch(ticker: str) -> dict:
+async def fetch(session: aiohttp.ClientSession, ticker: str) -> dict:
     url = make_url(ticker)
-    resp = requests.get(url)
-    json = resp.json()
-    return json
+    async with session.get(url) as resp:
+        json = await resp.json()
+        return json
 
 
-def quote(ticker: str) -> float:
-    json = fetch(ticker)
+async def quote(session: aiohttp.ClientSession, ticker: str) -> float:
+    json = await fetch(session, ticker)
     try:
         price = json['profile']['price']
     except KeyError:
