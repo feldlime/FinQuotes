@@ -1,5 +1,7 @@
+import asyncio
 from typing import Callable, Optional
 
+import aiohttp
 import attr
 
 from .exceptions import GettingQuoteError
@@ -7,6 +9,7 @@ from .services import (
     moex_bound_quote,
     moex_share_quote,
     bcs_quote,
+    fmp_quote,
 )
 
 
@@ -16,30 +19,40 @@ class Quote:
     source: str = attr.ib()
 
 
-def get_quote_with_method(
-        method: Callable[[str], float],
+async def fetch(
+        session: aiohttp.ClientSession,
+        method: Callable[[aiohttp.ClientSession, str], float],
         source_name: str,
         ticker: str,
 ) -> Optional[Quote]:
     try:
-        price = method(ticker)
+        price = await method(session, ticker)
     except GettingQuoteError:
         return None
 
     return Quote(price, source_name)
 
 
-def get_quote(ticker: str) -> Quote:
+async def get_quote(ticker: str) -> Quote:
     methods = [
+        (bcs_quote, 'bcs'),
+        (fmp_quote, 'fmp'),
         (moex_share_quote, 'moex_share'),
         (moex_bound_quote, 'moex_bound'),
-        (bcs_quote, 'bcs'),
+
     ]
 
-    for method in methods:
-        method_func, method_name = method
-        quote = get_quote_with_method(method_func, method_name, ticker)
-        if quote is not None:
-            return quote
+    tasks = []
+    async with aiohttp.ClientSession() as session:
+        for method_desc in methods:
+            method, method_name = method_desc
+            coroutine = fetch(session, method, method_name, ticker)
+            task = asyncio.create_task(coroutine)
+            tasks.append(task)
+
+        for future in asyncio.as_completed(tasks):
+            quote = await future
+            if quote is not None:
+                return quote
 
     raise GettingQuoteError('No quote was found')
