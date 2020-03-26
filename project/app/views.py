@@ -31,7 +31,7 @@ async def time(_: web.Request) -> web.Response:
 async def quote(request: web.Request) -> web.Response:
     ticker = TickerSchema().load(request.match_info).pop('ticker')
     try:
-        quote_ = get_quote(ticker)
+        quote_ = await get_quote(ticker)
         return ok(data=attr.asdict(quote_))
     except TickerNotFoundError as e:
         return bad_request(message=f'Ticker not found: {e!r}')

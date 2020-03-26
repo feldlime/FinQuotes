@@ -1,6 +1,6 @@
 import re
 
-import requests
+import aiohttp
 from lxml import etree
 
 from project.exceptions import TickerNotFoundError, PriceNotFoundError
@@ -16,16 +16,12 @@ def get_url(ticker: str) -> str:
     return f'{BASE_URL}/{ticker}'
 
 
-def load_html(ticker: str) -> str:
+async def fetch(session: aiohttp.ClientSession, ticker: str):
     url = get_url(ticker)
-    r = requests.get(url)
-
-    if r.status_code >= 400:
-        raise TickerNotFoundError(
-            f'Cannot find ticker page, status_code = {r.status_code}'
-        )
-
-    return r.text
+    async with session.get(url) as resp:
+        status_code = resp.status
+        html = await resp.text()
+        return status_code, html
 
 
 def extract_price(html: str) -> float:
@@ -43,7 +39,12 @@ def extract_price(html: str) -> float:
     return float(clear_price.replace(',', '.'))
 
 
-def quote(ticker: str) -> float:
-    html = load_html(ticker)
+async def quote(session: aiohttp.ClientSession, ticker: str) -> float:
+    status_code, html = await fetch(session, ticker)
+
+    if status_code >= 400:
+        raise TickerNotFoundError(
+            f'Cannot find ticker page, status_code = {status_code}'
+        )
     price = extract_price(html)
     return price
