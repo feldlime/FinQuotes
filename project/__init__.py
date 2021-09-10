@@ -1,7 +1,7 @@
 from .app import create_app
-from .config import Config
+from .settings import env
 
 __all__ = (
     'create_app',
-    'Config',
+    'env',
 )

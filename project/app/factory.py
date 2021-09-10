@@ -1,16 +1,13 @@
-from typing import Optional
+from aiohttp import web
 
-from flask import Flask
+from .views import ROUTES
 
-from .api import bp
+__all__ = (
+    'create_app',
+)
 
 
-def create_app(config: Optional[object] = None) -> Flask:
-    app = Flask(__name__)
-
-    if config is not None:
-        app.config.from_object(config)
-
-    app.register_blueprint(bp, url_prefix='/api')
-
+async def create_app() -> web.Application:
+    app = web.Application()
+    app.router.add_routes(ROUTES)
     return app
